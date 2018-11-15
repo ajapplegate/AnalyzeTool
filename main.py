@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 import xlrd
-
+import os
 
 def sort_by_value(d):
     items = d.items()
@@ -10,22 +10,22 @@ def sort_by_value(d):
     backitems.sort(reverse=True)
     return backitems
 
+my_filetypes = [("excel files", "*.xls"), ("excel files", "*.xlsx"), ("all files", "*.*")]
 
 def import_excel():
-    import_excel_name = filedialog.askopenfilename(initialdir="/", title="选择EXCEL文件",
-                                                   filetypes=(("excel files", "*.xls"),
-                                                              ("excel files", "*.xlsx"),
-                                                              ("all files", "*.*"))
-                                                   )
+    import_excel_name = filedialog.askopenfilename(initialdir=os.getcwd(), 
+                                                   title="Please select file:",
+                                                   filetypes=my_filetypes)
+                                                   
     data = xlrd.open_workbook(import_excel_name)
     table = data.sheets()[0]
     nrows = table.nrows
     ncols = table.ncols
     if ncols == 0 | nrows == 0:
-        messagebox.showerror("文件格式错误", "excel为空！")
+        messagebox.showerror("File format error", "File is empty！")
         return
     if ncols % 2 == 1:
-        messagebox.showerror("文件格式错误", "excel必须为偶数列！")
+        messagebox.showerror("Wrong file format", "Excel must be an even column！")
         return
     mdict = {}
     for i in range(nrows):
@@ -43,7 +43,7 @@ def import_excel():
 
 
 def save_result():
-    save_text_name = filedialog.asksaveasfilename(initialdir="/", title="保存统计结果",
+    save_text_name = filedialog.asksaveasfilename(initialdir="/", title="Save file",
                                                   filetypes=(("text files", "*.txt"), ("all files", "*.*")))
     if save_text_name == '':
         return
@@ -57,27 +57,25 @@ def save_result():
 
 
 def show_help():
-    messagebox.showinfo("操作说明", "导入需统计的EXCEL文档，对sheet0统计每个单元格出现的次数，倒序排列，结果在窗口中显示，亦可保存至指定文件。")
-
+    messagebox.showinfo("Instructions for use", "Import statistics excel document，Count the number of occurrences of each cell for sheet 0，Reverse order，The result is displayed in the window，It can also be saved to a specified file.")
 
 def show_about():
-    messagebox.showinfo("关于", "本软件由vince开发，如有疑问请email至vincehe2013@163.com。")
-
+    messagebox.showinfo("on", "This code was adapted by Anna. If you need help with it, well so do I.")
 
 def init_menu():
     menu_bar = Menu(root)
     file_menu = Menu(menu_bar, tearoff=0)
-    file_menu.add_command(label="导入EXCEL", command=import_excel)
-    file_menu.add_command(label="结果保存至..", command=save_result)
+    file_menu.add_command(label="Import excel", command=import_excel)
+    file_menu.add_command(label="Save result to:", command=save_result)
     file_menu.add_separator()
-    file_menu.add_command(label="退出", command=root.quit)
-    menu_bar.add_cascade(label="操作", menu=file_menu)
+    file_menu.add_command(label="drop out", command=root.quit)
+    menu_bar.add_cascade(label="operating", menu=file_menu)
 
     help_menu = Menu(menu_bar, tearoff=0)
-    help_menu.add_command(label="使用说明", command=show_help)
+    help_menu.add_command(label="Instructions for use", command=show_help)
     help_menu.add_separator()
-    help_menu.add_command(label="关于", command=show_about)
-    menu_bar.add_cascade(label="帮助", menu=help_menu)
+    help_menu.add_command(label="on", command=show_about)
+    menu_bar.add_cascade(label="Help", menu=help_menu)
     root.config(menu=menu_bar)
 
 
@@ -87,5 +85,5 @@ scrollbar = Scrollbar(root)
 scrollbar.pack(side=RIGHT, fill=Y)
 listbox = Listbox(root, yscrollcommand=scrollbar.set)
 root.geometry('800x600+500+200')
-root.title('EXCEL计数工具V1.0')
+root.title('Excel analysis tool')
 mainloop()
